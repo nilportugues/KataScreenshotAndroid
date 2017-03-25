@@ -55,6 +55,7 @@ public class SuperHeroViewHolderTest extends ScreenshotTest {
             + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
             + "mollit anim id est laborum.";
     boolean isAvenger = false;
+
     return givenASuperHero(superHeroName, superHeroDescription, isAvenger);
   }
 
@@ -67,7 +68,8 @@ public class SuperHeroViewHolderTest extends ScreenshotTest {
             + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
             + "mollit anim id est laborum.";
     String superHeroDescription = "Description Super Hero";
-    boolean isAvenger = false;
+    boolean isAvenger = true; //originally was false.
+
     return givenASuperHero(superHeroName, superHeroDescription, isAvenger);
   }
 

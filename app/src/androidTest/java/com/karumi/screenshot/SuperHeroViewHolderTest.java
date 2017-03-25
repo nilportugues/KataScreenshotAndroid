@@ -17,72 +17,145 @@
 package com.karumi.screenshot;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.test.rule.ActivityTestRule;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import com.karumi.screenshot.model.SuperHero;
+import com.karumi.screenshot.model.SuperHeroesRepository;
 import com.karumi.screenshot.ui.presenter.SuperHeroesPresenter;
+import com.karumi.screenshot.ui.view.SuperHeroDetailActivity;
 import com.karumi.screenshot.ui.view.SuperHeroViewHolder;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 public class SuperHeroViewHolderTest extends ScreenshotTest {
 
-  @Test public void showsAnySuperHero() {
-    SuperHero superHero = givenASuperHero();
-    SuperHeroViewHolder holder = givenASuperHeroViewHolder();
+    private static final int SUPER_HERO_ROW_HEIGHT = R.dimen.super_hero_row_height;
+    private static final int SUPER_HERO_LAYOUT = R.layout.super_hero_row;
 
-    holder.render(superHero);
+    @Mock
+    private SuperHeroesRepository repository;
 
-    compareScreenshot(holder, R.dimen.super_hero_row_height);
-  }
+    @Rule
+    public ActivityTestRule<SuperHeroDetailActivity> activityRule
+            = new ActivityTestRule<>(SuperHeroDetailActivity.class, true, false);
 
-  private SuperHeroViewHolder givenASuperHeroViewHolder() {
-    Context context = getInstrumentation().getTargetContext();
-    LayoutInflater inflater = LayoutInflater.from(context);
-    View view = inflater.inflate(R.layout.super_hero_row, null, false);
-    return new SuperHeroViewHolder(view, mock(SuperHeroesPresenter.class));
-  }
+    @Test
+    public void showsAnySuperHero() {
+        final SuperHero superHero = givenASuperHero();
+        final SuperHeroViewHolder holder = givenASuperHeroViewHolder();
+        holder.render(superHero);
 
-  private SuperHero givenASuperHeroWithALongDescription() {
-    String superHeroName = "Super Hero Name";
-    String superHeroDescription =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt "
-            + "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
-            + "ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in "
-            + "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-            + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
-            + "mollit anim id est laborum.";
-    boolean isAvenger = false;
+        compareScreenshot(holder, R.dimen.super_hero_row_height);
+    }
 
-    return givenASuperHero(superHeroName, superHeroDescription, isAvenger);
-  }
+    @Test
+    public void showsSuperHeroesWithLongNames() {
+        final SuperHero superHero = givenASuperHeroWithALongName();
+        compareScreenshotWithSuperHeroe(superHero);
+    }
 
-  private SuperHero givenASuperHeroWithALongName() {
-    String superHeroName =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt "
-            + "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
-            + "ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in "
-            + "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-            + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
-            + "mollit anim id est laborum.";
-    String superHeroDescription = "Description Super Hero";
-    boolean isAvenger = true; //originally was false.
+    private void compareScreenshotWithSuperHeroe(SuperHero superHero) {
+        final SuperHeroViewHolder holder = givenASuperHeroViewHolder();
+        holder.render(superHero);
 
-    return givenASuperHero(superHeroName, superHeroDescription, isAvenger);
-  }
+        compareScreenshot(holder, SUPER_HERO_ROW_HEIGHT);
+    }
 
-  private SuperHero givenAnAvenger() {
-    return givenASuperHero("Super Hero Name", "Super Hero Description", true);
-  }
+    @Test
+    public void showsSuperHeroesWithLongDescriptions() {
+        final SuperHero superHero = givenASuperHeroWithALongDescription();
+        compareScreenshotWithSuperHeroe(superHero);
+    }
 
-  private SuperHero givenASuperHero() {
-    return givenASuperHero("Super Hero Name", "Super Hero Description", false);
-  }
+    @Test
+    public void showsAvengersBadge() {
+        final SuperHero superHero = givenAnAvenger();
+        compareScreenshotWithSuperHeroe(superHero);
+    }
 
-  private SuperHero givenASuperHero(String superHeroName, String superHeroDescription,
-      boolean isAvenger) {
-    return new SuperHero(superHeroName, null, isAvenger, superHeroDescription);
-  }
+    private SuperHeroViewHolder givenASuperHeroViewHolder() {
+        final Context context = getInstrumentation().getTargetContext();
+        final LayoutInflater inflater = LayoutInflater.from(context);
+        final View view = inflater.inflate(SUPER_HERO_LAYOUT, null, false);
+
+        return new SuperHeroViewHolder(view, mock(SuperHeroesPresenter.class));
+    }
+
+    private SuperHero givenASuperHeroWithALongDescription() {
+        String superHeroName = "Super Hero Name";
+        String superHeroDescription =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt "
+                        + "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
+                        + "ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in "
+                        + "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+                        + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
+                        + "mollit anim id est laborum.";
+
+        return givenASuperHero(superHeroName, superHeroDescription, false);
+    }
+
+    private SuperHero givenASuperHeroWithALongName() {
+        String superHeroName =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt "
+                        + "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
+                        + "ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in "
+                        + "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+                        + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
+                        + "mollit anim id est laborum.";
+        String superHeroDescription = "Description Super Hero";
+
+        return givenASuperHero(superHeroName, superHeroDescription, false);
+    }
+
+    private SuperHero givenAnAvenger() {
+        return givenASuperHero("Super Hero Name", "Super Hero Description", true);
+    }
+
+    private SuperHero givenASuperHero() {
+        return givenASuperHero("Super Hero Name", "Super Hero Description", false);
+    }
+
+    private SuperHero givenASuperHero(String superHeroName,
+                                      String superHeroDescription,
+                                      boolean isAvenger) {
+        return new SuperHero(superHeroName, null, isAvenger, superHeroDescription);
+    }
+
+
+
+    private SuperHero givenThereIsASuperHero(boolean isAvenger) {
+        final String superHeroName = "SuperHero";
+        final String superHeroDescription = "Super Hero Description";
+        final SuperHero superHero = new SuperHero(superHeroName, null, isAvenger, superHeroDescription);
+
+        when(repository.getByName(superHeroName)).thenReturn(superHero);
+
+        return superHero;
+    }
+
+    private SuperHeroDetailActivity startActivity(SuperHero superHero) {
+        final Intent intent = new Intent();
+        intent.putExtra("super_hero_name_key", superHero.getName());
+
+        return activityRule.launchActivity(intent);
+    }
+
+
+    @Test
+    public void itShouldShowAnAvenger() {
+        final SuperHero superHero = givenThereIsASuperHero(true);
+        final SuperHeroDetailActivity activity = startActivity(superHero);
+
+        compareScreenshot(activity);
+    }
 }
